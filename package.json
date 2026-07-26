@@ -16,16 +16,19 @@
   },
   "dependencies": {
     "@nuxt/icon": "^2.3.1",
+    "@pinia/nuxt": "^1.0.1",
     "@tanstack/vue-query": "^5.101.4",
     "@vueuse/nuxt": "^14.3.0",
     "axios": "^1.18.1",
     "nuxt": "^4.5.0",
+    "pinia": "^4.0.2",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
     "vue-sonner": "^2.0.9",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.120",
     "@nuxt/eslint": "^1.16.0",
     "@nuxtjs/tailwindcss": "^7.0.0-beta.1",
     "@types/node": "^26.1.1",
