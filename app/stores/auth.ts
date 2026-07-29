@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import type { UserProfile } from '~/services/api'
+import type { User } from '~/services/api'
 
 interface AuthState {
-  user: UserProfile | null
+  user: User | null
   token: string | null
   initialized: boolean
 }
@@ -20,28 +20,24 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    setSession(token: string, user: UserProfile) {
+    setSession(token: string, user: User) {
       this.token = token
       this.user = user
+      this.initialized = true
       if (import.meta.client) {
         localStorage.setItem('auth_token', token)
       }
     },
 
-    async fetchUser() {
-      try {
-        const { api } = await import('~/services/api')
-        const { data } = await api.auth.me()
-        this.user = data.data
-        this.initialized = true
-      } catch {
-        this.clearSession()
-      }
+    setUser(user: User) {
+      this.user = user
+      this.initialized = true
     },
 
     clearSession() {
       this.token = null
       this.user = null
+      this.initialized = false
       if (import.meta.client) {
         localStorage.removeItem('auth_token')
       }

@@ -34,7 +34,7 @@ export function useAuth() {
 
   const userQuery = useQuery({
     queryKey: ['auth', 'user'],
-    queryFn: () => api.auth.me().then((r) => r.data.data),
+    queryFn: () => api.user.me().then((r) => r.data.data),
     enabled: computed(() => authStore.isAuthenticated),
     staleTime: 5 * 60 * 1000,
   })

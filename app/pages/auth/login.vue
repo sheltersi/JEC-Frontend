@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'auth',
+  middleware: 'guest',
 })
 
 useSeoMeta({
@@ -9,8 +10,12 @@ useSeoMeta({
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
+const remember = ref(false)
 const loading = ref(false)
 const errors = ref<Record<string, string>>({})
+
+const { $toast } = useNuxtApp()
 
 async function handleLogin() {
   errors.value = {}
@@ -24,10 +29,29 @@ async function handleLogin() {
   }
 
   loading.value = true
-  // TODO: Implement auth API call
-  await new Promise((r) => setTimeout(r, 1000))
-  navigateTo('/dashboard')
-  loading.value = false
+
+  try {
+    const { authService } = await import('~/services/auth.service')
+    await authService.login({
+      email: email.value,
+      password: password.value,
+      remember: remember.value,
+    })
+    $toast.success('Welcome back!')
+    await navigateTo('/dashboard')
+  } catch (error: unknown) {
+    const { isValidationError, getValidationErrors, getErrorMessage } =
+      await import('~/utils/error-handler')
+    const axiosError = error as { response?: { status: number } }
+
+    if (isValidationError(axiosError as never)) {
+      errors.value = getValidationErrors(axiosError as never)
+    } else {
+      errors.value.general = getErrorMessage(error)
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -39,6 +63,10 @@ async function handleLogin() {
     </div>
 
     <form class="space-y-5" @submit.prevent="handleLogin">
+      <div v-if="errors.general" class="rounded-md bg-danger/10 p-3 text-sm text-danger">
+        {{ errors.general }}
+      </div>
+
       <div class="form-group">
         <label for="email" class="label">Email</label>
         <input
@@ -64,21 +92,31 @@ async function handleLogin() {
             Forgot password?
           </NuxtLink>
         </div>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-          class="input"
-          :class="{ 'input-error': errors.password }"
-          placeholder="••••••••"
-          autocomplete="current-password"
-        >
+        <div class="relative">
+          <input
+            id="password"
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            class="input pr-10"
+            :class="{ 'input-error': errors.password }"
+            placeholder="••••••••"
+            autocomplete="current-password"
+          >
+          <button
+            type="button"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            @click="showPassword = !showPassword"
+          >
+            <Icon :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'" class="size-4" />
+          </button>
+        </div>
         <p v-if="errors.password" class="form-error">{{ errors.password }}</p>
       </div>
 
       <div class="flex items-center gap-2">
         <input
           id="remember"
+          v-model="remember"
           type="checkbox"
           class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
         >
