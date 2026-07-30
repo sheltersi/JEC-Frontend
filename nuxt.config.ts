@@ -14,4 +14,13 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000',
     },
   },
+
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'https://jec.sheltersibanda.com/api',
+        changeOrigin: true,
+      },
+    },
+  },
 })

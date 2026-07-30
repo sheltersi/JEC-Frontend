@@ -48,15 +48,20 @@ async function handleRegister() {
     $toast.success('Account created successfully!')
     await navigateTo('/dashboard')
   } catch (error: unknown) {
-    const { getValidationErrors, isValidationError, getErrorMessage } =
-      await import('~/utils/error-handler')
-    const axiosError = error as { response?: { status: number } }
+    const { getErrorMessage } = await import('~/utils/error-handler')
+    const err = error as { response?: { status: number; data?: { message?: string } } }
 
-    if (isValidationError(axiosError as never)) {
-      errors.value = getValidationErrors(axiosError as never)
-    } else {
-      errors.value.general = getErrorMessage(error)
+    if (err.response?.status === 422 && err.response?.data) {
+      const data = err.response.data as { errors?: Record<string, string[]> }
+      if (data.errors) {
+        for (const [field, messages] of Object.entries(data.errors)) {
+          errors.value[field] = Array.isArray(messages) ? (messages[0] ?? '') : String(messages)
+        }
+        return
+      }
     }
+
+    errors.value.general = err.response?.data?.message || getErrorMessage(error)
   } finally {
     loading.value = false
   }
