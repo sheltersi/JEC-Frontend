@@ -78,7 +78,7 @@ const remoteLabels: Record<string, string> = {
         </p>
       </div>
       <NuxtLink
-        to="/dashboard/profile/setup"
+        to="/dashboard/profile/edit"
         class="btn btn-outline btn-sm gap-2"
       >
         <Icon name="lucide:pencil" class="size-3.5" />
@@ -153,7 +153,7 @@ const remoteLabels: Record<string, string> = {
             </p>
             <p v-else class="text-sm italic text-muted-foreground">
               No bio added yet.
-              <NuxtLink to="/dashboard/profile/setup" class="font-medium text-primary hover:underline">
+              <NuxtLink to="/dashboard/profile/edit" class="font-medium text-primary hover:underline">
                 Add one
               </NuxtLink>
             </p>
@@ -298,7 +298,7 @@ const remoteLabels: Record<string, string> = {
               class="text-sm italic text-muted-foreground"
             >
               No links added yet.
-              <NuxtLink to="/dashboard/profile/setup" class="font-medium text-primary hover:underline">
+              <NuxtLink to="/dashboard/profile/edit" class="font-medium text-primary hover:underline">
                 Add links
               </NuxtLink>
             </p>
