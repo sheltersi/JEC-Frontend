@@ -45,8 +45,9 @@ async function handleRegister() {
       password: password.value,
       password_confirmation: confirmPassword.value,
     })
+    const authStore = useAuthStore()
     $toast.success('Account created successfully!')
-    await navigateTo('/dashboard')
+    await navigateTo(authStore.postLoginRoute)
   } catch (error: unknown) {
     const { getErrorMessage } = await import('~/utils/error-handler')
     const err = error as { response?: { status: number; data?: { message?: string } } }

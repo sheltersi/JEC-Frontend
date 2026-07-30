@@ -17,6 +17,27 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.token,
     currentUser: (state) => state.user,
+
+    /**
+     * Determine if the user's profile has been filled in.
+     * A profile is considered complete when at least the headline or
+     * current job title has been set, indicating the user has gone
+     * through the onboarding flow.
+     */
+    isProfileComplete(): boolean {
+      const profile = this.user?.profile
+      if (!profile) return false
+
+      return !!(profile.headline || profile.current_job_title)
+    },
+
+    /**
+     * The route to redirect to after a successful login/registration.
+     * First-time users go to profile setup; returning users go to the dashboard.
+     */
+    postLoginRoute(): string {
+      return this.isProfileComplete ? '/dashboard' : '/dashboard/profile/setup'
+    },
   },
 
   actions: {

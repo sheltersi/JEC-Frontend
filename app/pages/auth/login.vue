@@ -37,8 +37,9 @@ async function handleLogin() {
       password: password.value,
       remember: remember.value,
     })
+    const authStore = useAuthStore()
     $toast.success('Welcome back!')
-    await navigateTo('/dashboard')
+    await navigateTo(authStore.postLoginRoute)
   } catch (error: unknown) {
     const { isValidationError, getValidationErrors, getErrorMessage } =
       await import('~/utils/error-handler')
