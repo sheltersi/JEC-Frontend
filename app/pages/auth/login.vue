@@ -17,6 +17,7 @@ const errors = ref<Record<string, string>>({})
 
 const { $toast } = useNuxtApp()
 
+/** Handle the login form submission */
 async function handleLogin() {
   errors.value = {}
   if (!email.value) {
@@ -58,37 +59,55 @@ async function handleLogin() {
 
 <template>
   <div>
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-surface-900">Welcome back</h1>
-      <p class="mt-1 text-sm text-muted-foreground">Sign in to your account to continue.</p>
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-bold tracking-tight text-surface-900">
+        Welcome back
+      </h1>
+      <p class="mt-1.5 text-sm text-muted-foreground">
+        Sign in to continue analyzing your job fit.
+      </p>
     </div>
 
     <form class="space-y-5" @submit.prevent="handleLogin">
-      <div v-if="errors.general" class="rounded-md bg-danger/10 p-3 text-sm text-danger">
-        {{ errors.general }}
+      <!-- Global error -->
+      <div
+        v-if="errors.general"
+        class="flex items-start gap-2.5 rounded-lg border border-danger/20 bg-danger/10 p-3 text-sm text-danger"
+      >
+        <Icon name="lucide:alert-circle" class="mt-0.5 size-4 shrink-0" />
+        <span>{{ errors.general }}</span>
       </div>
 
+      <!-- Email -->
       <div class="form-group">
-        <label for="email" class="label">Email</label>
-        <input
-          id="email"
-          v-model="email"
-          type="email"
-          class="input"
-          :class="{ 'input-error': errors.email }"
-          placeholder="you@example.com"
-          autocomplete="email"
-          autofocus
-        >
+        <label for="email" class="label">Email address</label>
+        <div class="relative">
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            class="input pl-10"
+            :class="{ 'input-error': errors.email }"
+            placeholder="you@example.com"
+            autocomplete="email"
+            autofocus
+          >
+          <Icon
+            name="lucide:mail"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
+        </div>
         <p v-if="errors.email" class="form-error">{{ errors.email }}</p>
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <div class="flex items-center justify-between">
           <label for="password" class="label">Password</label>
           <NuxtLink
             to="/auth/forgot-password"
-            class="text-xs text-primary hover:text-primary-500 transition-colors"
+            class="text-xs font-medium text-primary hover:text-primary-500 transition-colors"
           >
             Forgot password?
           </NuxtLink>
@@ -98,11 +117,15 @@ async function handleLogin() {
             id="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
-            class="input pr-10"
+            class="input px-10"
             :class="{ 'input-error': errors.password }"
             placeholder="••••••••"
             autocomplete="current-password"
           >
+          <Icon
+            name="lucide:lock"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
           <button
             type="button"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -114,47 +137,65 @@ async function handleLogin() {
         <p v-if="errors.password" class="form-error">{{ errors.password }}</p>
       </div>
 
-      <div class="flex items-center gap-2">
-        <input
-          id="remember"
-          v-model="remember"
-          type="checkbox"
-          class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-        >
-        <label for="remember" class="text-sm text-surface-600">Remember me</label>
+      <!-- Remember me -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <input
+            id="remember"
+            v-model="remember"
+            type="checkbox"
+            class="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+          >
+          <label for="remember" class="text-sm text-surface-600">Remember me</label>
+        </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-full" :disabled="loading">
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="btn btn-primary w-full gap-2 shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30"
+        :disabled="loading"
+      >
         <Icon v-if="loading" name="lucide:loader-circle" class="size-4 animate-spin" />
-        {{ loading ? 'Signing in...' : 'Sign In' }}
+        <Icon v-else name="lucide:arrow-right" class="size-4" />
+        <span>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
       </button>
 
+      <!-- Divider -->
       <div class="relative">
         <div class="absolute inset-0 flex items-center">
           <div class="w-full border-t border-border" />
         </div>
         <div class="relative flex justify-center text-xs">
-          <span class="bg-bright-snow px-2 text-muted-foreground">or continue with</span>
+          <span class="bg-surface px-3 text-muted-foreground">or continue with</span>
         </div>
       </div>
 
+      <!-- Social login -->
       <div class="grid grid-cols-2 gap-3">
-        <button type="button" class="btn btn-outline">
+        <button
+          type="button"
+          class="btn btn-outline gap-2 hover:bg-surface-100"
+        >
           <Icon name="lucide:github" class="size-4" />
-          GitHub
+          <span class="text-sm">GitHub</span>
         </button>
-        <button type="button" class="btn btn-outline">
+        <button
+          type="button"
+          class="btn btn-outline gap-2 hover:bg-surface-100"
+        >
           <Icon name="lucide:chrome" class="size-4" />
-          Google
+          <span class="text-sm">Google</span>
         </button>
       </div>
     </form>
 
-    <p class="mt-6 text-center text-sm text-muted-foreground">
+    <!-- Footer link -->
+    <p class="mt-8 text-center text-sm text-muted-foreground">
       Don't have an account?
       <NuxtLink
         to="/auth/register"
-        class="font-medium text-primary hover:text-primary-500 transition-colors"
+        class="font-semibold text-primary hover:text-primary-500 transition-colors"
       >
         Create one
       </NuxtLink>

@@ -19,6 +19,7 @@ const errors = ref<Record<string, string>>({})
 
 const { $toast } = useNuxtApp()
 
+/** Validate registration form fields */
 function validate() {
   errors.value = {}
   if (!name.value) errors.value.name = 'Full name is required'
@@ -32,6 +33,7 @@ function validate() {
   return Object.keys(errors.value).length === 0
 }
 
+/** Submit the registration form */
 async function handleRegister() {
   if (!validate()) return
 
@@ -71,47 +73,70 @@ async function handleRegister() {
 
 <template>
   <div>
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-surface-900">Create your account</h1>
-      <p class="mt-1 text-sm text-muted-foreground">
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl font-bold tracking-tight text-surface-900">
+        Create your account
+      </h1>
+      <p class="mt-1.5 text-sm text-muted-foreground">
         Start analyzing your job fit in under a minute.
       </p>
     </div>
 
     <form class="space-y-5" @submit.prevent="handleRegister">
-      <div v-if="errors.general" class="rounded-md bg-danger/10 p-3 text-sm text-danger">
-        {{ errors.general }}
+      <!-- Global error -->
+      <div
+        v-if="errors.general"
+        class="flex items-start gap-2.5 rounded-lg border border-danger/20 bg-danger/10 p-3 text-sm text-danger"
+      >
+        <Icon name="lucide:alert-circle" class="mt-0.5 size-4 shrink-0" />
+        <span>{{ errors.general }}</span>
       </div>
 
+      <!-- Full Name -->
       <div class="form-group">
         <label for="name" class="label label-required">Full Name</label>
-        <input
-          id="name"
-          v-model="name"
-          type="text"
-          class="input"
-          :class="{ 'input-error': errors.name }"
-          placeholder="John Doe"
-          autocomplete="name"
-          autofocus
-        >
+        <div class="relative">
+          <input
+            id="name"
+            v-model="name"
+            type="text"
+            class="input pl-10"
+            :class="{ 'input-error': errors.name }"
+            placeholder="John Doe"
+            autocomplete="name"
+            autofocus
+          >
+          <Icon
+            name="lucide:user"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
+        </div>
         <p v-if="errors.name" class="form-error">{{ errors.name }}</p>
       </div>
 
+      <!-- Email -->
       <div class="form-group">
-        <label for="email" class="label label-required">Email</label>
-        <input
-          id="email"
-          v-model="email"
-          type="email"
-          class="input"
-          :class="{ 'input-error': errors.email }"
-          placeholder="you@example.com"
-          autocomplete="email"
-        >
+        <label for="email" class="label label-required">Email address</label>
+        <div class="relative">
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            class="input pl-10"
+            :class="{ 'input-error': errors.email }"
+            placeholder="you@example.com"
+            autocomplete="email"
+          >
+          <Icon
+            name="lucide:mail"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
+        </div>
         <p v-if="errors.email" class="form-error">{{ errors.email }}</p>
       </div>
 
+      <!-- Password -->
       <div class="form-group">
         <label for="password" class="label label-required">Password</label>
         <div class="relative">
@@ -119,11 +144,15 @@ async function handleRegister() {
             id="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
-            class="input pr-10"
+            class="input px-10"
             :class="{ 'input-error': errors.password }"
             placeholder="••••••••"
             autocomplete="new-password"
           >
+          <Icon
+            name="lucide:lock"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
           <button
             type="button"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -132,9 +161,11 @@ async function handleRegister() {
             <Icon :name="showPassword ? 'lucide:eye-off' : 'lucide:eye'" class="size-4" />
           </button>
         </div>
+        <p class="form-hint">Must be at least 8 characters</p>
         <p v-if="errors.password" class="form-error">{{ errors.password }}</p>
       </div>
 
+      <!-- Confirm Password -->
       <div class="form-group">
         <label for="confirm-password" class="label label-required">Confirm Password</label>
         <div class="relative">
@@ -142,11 +173,15 @@ async function handleRegister() {
             id="confirm-password"
             v-model="confirmPassword"
             :type="showConfirmPassword ? 'text' : 'password'"
-            class="input pr-10"
+            class="input px-10"
             :class="{ 'input-error': errors.confirmPassword }"
             placeholder="••••••••"
             autocomplete="new-password"
           >
+          <Icon
+            name="lucide:lock"
+            class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
           <button
             type="button"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -158,6 +193,7 @@ async function handleRegister() {
         <p v-if="errors.confirmPassword" class="form-error">{{ errors.confirmPassword }}</p>
       </div>
 
+      <!-- Terms -->
       <div class="flex items-start gap-2">
         <input
           id="terms"
@@ -165,53 +201,58 @@ async function handleRegister() {
           class="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
           required
         >
-        <label for="terms" class="text-sm text-surface-600">
+        <label for="terms" class="text-sm leading-relaxed text-surface-600">
           I agree to the
-          <a
-href="#"
-class="text-primary hover:text-primary-500 transition-colors"
-            >Terms of Service</a
-          >
+          <a href="#" class="font-medium text-primary hover:text-primary-500 transition-colors">
+            Terms of Service
+          </a>
           and
-          <a
-href="#"
-class="text-primary hover:text-primary-500 transition-colors"
-            >Privacy Policy</a
-          >
+          <a href="#" class="font-medium text-primary hover:text-primary-500 transition-colors">
+            Privacy Policy
+          </a>
         </label>
       </div>
 
-      <button type="submit" class="btn btn-primary w-full" :disabled="loading">
+      <!-- Submit -->
+      <button
+        type="submit"
+        class="btn btn-primary w-full gap-2 shadow-sm shadow-primary/20 hover:shadow-md hover:shadow-primary/30"
+        :disabled="loading"
+      >
         <Icon v-if="loading" name="lucide:loader-circle" class="size-4 animate-spin" />
-        {{ loading ? 'Creating account...' : 'Create Account' }}
+        <Icon v-else name="lucide:user-plus" class="size-4" />
+        <span>{{ loading ? 'Creating account...' : 'Create Account' }}</span>
       </button>
 
+      <!-- Divider -->
       <div class="relative">
         <div class="absolute inset-0 flex items-center">
           <div class="w-full border-t border-border" />
         </div>
         <div class="relative flex justify-center text-xs">
-          <span class="bg-bright-snow px-2 text-muted-foreground">or continue with</span>
+          <span class="bg-surface px-3 text-muted-foreground">or continue with</span>
         </div>
       </div>
 
+      <!-- Social login -->
       <div class="grid grid-cols-2 gap-3">
-        <button type="button" class="btn btn-outline">
+        <button type="button" class="btn btn-outline gap-2 hover:bg-surface-100">
           <Icon name="lucide:github" class="size-4" />
-          GitHub
+          <span class="text-sm">GitHub</span>
         </button>
-        <button type="button" class="btn btn-outline">
+        <button type="button" class="btn btn-outline gap-2 hover:bg-surface-100">
           <Icon name="lucide:chrome" class="size-4" />
-          Google
+          <span class="text-sm">Google</span>
         </button>
       </div>
     </form>
 
-    <p class="mt-6 text-center text-sm text-muted-foreground">
+    <!-- Footer link -->
+    <p class="mt-8 text-center text-sm text-muted-foreground">
       Already have an account?
       <NuxtLink
         to="/auth/login"
-        class="font-medium text-primary hover:text-primary-500 transition-colors"
+        class="font-semibold text-primary hover:text-primary-500 transition-colors"
       >
         Sign in
       </NuxtLink>
