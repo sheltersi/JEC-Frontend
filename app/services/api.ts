@@ -106,7 +106,42 @@ export interface Language {
   proficiency: string
 }
 
-export interface JobAnalysis {
+/**
+ * A Job posting stored by the user.
+ * After analysis, the backend populates the score, skills, and recommendations.
+ */
+export interface Company {
+  id: number
+  name: string
+  website: string | null
+  industry: string | null
+  size: string | null
+  location: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Job {
+  id: number
+  title: string
+  company_id: number | null
+  company: Company | null
+  job_url: string | null
+  job_description: string
+  eligibility_score: number | null
+  matched_skills: Skill[]
+  missing_skills: Skill[]
+  recommendations: string[]
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+/**
+ * Result returned by the dedicated /eligibility-checks endpoint.
+ * Kept for compatibility with dashboard stats and history.
+ */
+export interface EligibilityCheck {
   id: number
   job_title: string
   company: string | null
@@ -125,7 +160,7 @@ export interface DashboardStats {
   total_analyses: number
   average_score: number
   top_missing_skills: { skill: string; count: number }[]
-  recent_analyses: JobAnalysis[]
+  recent_analyses: EligibilityCheck[]
   score_trend: { date: string; score: number }[]
 }
 
@@ -227,16 +262,53 @@ export const api = {
     destroy: (id: number) => client().delete(`/languages/${id}`),
   },
 
-  analysis: {
-    list: (params?: { page?: number; per_page?: number }) =>
-      client().get<BackendResponse<JobAnalysis[]>>('/analysis', { params }),
+  companies: {
+    list: (params?: { page?: number; per_page?: number; name?: string }) =>
+      client().get<BackendResponse<Company[]>>('/companies', { params }),
 
-    get: (id: number) => client().get<BackendResponse<JobAnalysis>>(`/analysis/${id}`),
+    get: (id: number) => client().get<BackendResponse<Company>>(`/companies/${id}`),
+
+    create: (data: Partial<Company>) =>
+      client().post<BackendResponse<Company>>('/companies', data),
+
+    update: (id: number, data: Partial<Company>) =>
+      client().put<BackendResponse<Company>>(`/companies/${id}`, data),
+
+    destroy: (id: number) => client().delete(`/companies/${id}`),
+  },
+
+  jobs: {
+    list: (params?: { page?: number; per_page?: number }) =>
+      client().get<BackendResponse<Job[]>>('/jobs', { params }),
+
+    get: (id: number) => client().get<BackendResponse<Job>>(`/jobs/${id}`),
+
+    create: (data: { title?: string; company_id?: number | null; job_url?: string | null; job_description?: string }) =>
+      client().post<BackendResponse<Job>>('/jobs', data),
+
+    update: (id: number, data: Partial<Job>) =>
+      client().put<BackendResponse<Job>>(`/jobs/${id}`, data),
+
+    destroy: (id: number) => client().delete(`/jobs/${id}`),
+
+    /** Trigger AI analysis for an existing job */
+    analyze: (id: number) => client().post<BackendResponse<Job>>(`/jobs/${id}/analyze`),
+
+    /** Poll the analysis status for async processing */
+    status: (id: number) => client().get<BackendResponse<{ status: string; progress?: number }>>(`/jobs/${id}/status`),
+
+    /** Import a job from a URL */
+    import: (data: { url: string }) => client().post<BackendResponse<Job>>('/jobs/import', data),
+  },
+
+  eligibilityChecks: {
+    list: (params?: { page?: number; per_page?: number }) =>
+      client().get<BackendResponse<EligibilityCheck[]>>('/eligibility-checks', { params }),
+
+    get: (id: number) => client().get<BackendResponse<EligibilityCheck>>(`/eligibility-checks/${id}`),
 
     create: (data: { job_url?: string; job_description?: string }) =>
-      client().post<BackendResponse<JobAnalysis>>('/analysis', data),
-
-    destroy: (id: number) => client().delete(`/analysis/${id}`),
+      client().post<BackendResponse<EligibilityCheck>>('/eligibility-checks', data),
   },
 
   dashboard: {

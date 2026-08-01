@@ -209,7 +209,7 @@ const tabs = [
               placeholder="e.g. Senior Frontend Developer"
               autofocus
             >
-            <Icon name="lucide:sparkles" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Icon name="lucide:star" class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           </div>
           <p class="form-hint">A short tagline that describes your expertise.</p>
           <p v-if="errors.headline" class="form-error">{{ errors.headline }}</p>
