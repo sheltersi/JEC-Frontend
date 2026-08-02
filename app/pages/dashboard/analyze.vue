@@ -414,7 +414,7 @@ onUnmounted(() => {
                 class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200"
               >
                 <Icon name="lucide:check" class="size-3" />
-                {{ skill.name }}
+                {{ skill.skill?.name ?? `Skill #${skill.skill_id}` }}
               </span>
             </div>
             <p v-else class="text-sm italic text-muted-foreground">
@@ -444,7 +444,7 @@ onUnmounted(() => {
                 class="inline-flex items-center gap-1 rounded-full bg-danger/5 px-3 py-1 text-xs font-medium text-danger ring-1 ring-danger/20"
               >
                 <Icon name="lucide:plus" class="size-3" />
-                {{ skill.name }}
+                {{ skill.skill?.name ?? `Skill #${skill.skill_id}` }}
               </span>
             </div>
             <p v-else class="text-sm italic text-muted-foreground">

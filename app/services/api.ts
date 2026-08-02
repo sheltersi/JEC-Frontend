@@ -61,34 +61,47 @@ export interface User {
   created_at: string
   updated_at: string
   profile: UserProfile
+  skills?: UserSkill[]
+  education?: Education[]
+  experience?: Experience[]
+  languages?: UserLanguage[]
 }
 
-export interface Skill {
+/** Reference skill from master skills table (used for dropdown selects) */
+export interface ReferenceSkill {
   id: number
   name: string
   category: string | null
-  proficiency_level: string | null
-  years_experience: number | null
+}
+
+/** A user's assigned skill record */
+export interface UserSkill {
+  id: number
+  skill_id: number
+  level: string
+  years_experience: number
+  skill?: ReferenceSkill
 }
 
 export interface Experience {
   id: number
   company: string
-  title: string
-  start_date: string
+  position: string
+  employment_type: string | null
+  start_date: string | null
   end_date: string | null
+  currently_working: boolean
   description: string | null
-  current: boolean
 }
 
 export interface Education {
   id: number
   institution: string
-  degree: string
+  qualification: string
   field_of_study: string | null
-  start_date: string
+  start_date: string | null
   end_date: string | null
-  gpa: string | null
+  grade: string | null
 }
 
 export interface Certification {
@@ -100,10 +113,18 @@ export interface Certification {
   credential_id: string | null
 }
 
-export interface Language {
+/** Reference language from master languages table (used for dropdown selects) */
+export interface ReferenceLanguage {
   id: number
   name: string
+}
+
+/** A user's assigned language record */
+export interface UserLanguage {
+  id: number
+  language_id: number
   proficiency: string
+  language?: ReferenceLanguage
 }
 
 /**
@@ -129,8 +150,8 @@ export interface Job {
   job_url: string | null
   job_description: string
   eligibility_score: number | null
-  matched_skills: Skill[]
-  missing_skills: Skill[]
+  matched_skills: UserSkill[]
+  missing_skills: UserSkill[]
   recommendations: string[]
   status: string
   created_at: string
@@ -148,8 +169,8 @@ export interface EligibilityCheck {
   job_url: string | null
   job_description: string
   eligibility_score: number | null
-  matched_skills: Skill[]
-  missing_skills: Skill[]
+  matched_skills: UserSkill[]
+  missing_skills: UserSkill[]
   recommendations: string[]
   status: string
   created_at: string
@@ -204,26 +225,23 @@ export const api = {
   },
 
   skills: {
-    list: () => client().get<BackendResponse<Skill[]>>('/skills'),
+    /** List reference/master skills (for dropdown selects) */
+    list: () => client().get<BackendResponse<ReferenceSkill[]>>('/skills'),
 
-    create: (data: Partial<Skill>) => client().post<BackendResponse<Skill>>('/skills', data),
-
-    update: (id: number, data: Partial<Skill>) =>
-      client().put<BackendResponse<Skill>>(`/skills/${id}`, data),
+    /** Create a user skill association */
+    create: (data: { skill_id: number; level: string; years_experience: number }) =>
+      client().post<BackendResponse<UserSkill>>('/skills', data),
 
     destroy: (id: number) => client().delete(`/skills/${id}`),
   },
 
   experience: {
-    list: () => client().get<BackendResponse<Experience[]>>('/experience'),
+    list: () => client().get<BackendResponse<Experience[]>>('/experiences'),
 
     create: (data: Partial<Experience>) =>
-      client().post<BackendResponse<Experience>>('/experience', data),
+      client().post<BackendResponse<Experience>>('/experiences', data),
 
-    update: (id: number, data: Partial<Experience>) =>
-      client().put<BackendResponse<Experience>>(`/experience/${id}`, data),
-
-    destroy: (id: number) => client().delete(`/experience/${id}`),
+    destroy: (id: number) => client().delete(`/experiences/${id}`),
   },
 
   education: {
@@ -231,9 +249,6 @@ export const api = {
 
     create: (data: Partial<Education>) =>
       client().post<BackendResponse<Education>>('/education', data),
-
-    update: (id: number, data: Partial<Education>) =>
-      client().put<BackendResponse<Education>>(`/education/${id}`, data),
 
     destroy: (id: number) => client().delete(`/education/${id}`),
   },
@@ -251,13 +266,12 @@ export const api = {
   },
 
   languages: {
-    list: () => client().get<BackendResponse<Language[]>>('/languages'),
+    /** List reference/master languages (for dropdown selects) */
+    list: () => client().get<BackendResponse<ReferenceLanguage[]>>('/languages'),
 
-    create: (data: Partial<Language>) =>
-      client().post<BackendResponse<Language>>('/languages', data),
-
-    update: (id: number, data: Partial<Language>) =>
-      client().put<BackendResponse<Language>>(`/languages/${id}`, data),
+    /** Create a user language association */
+    create: (data: { language_id: number; proficiency: string }) =>
+      client().post<BackendResponse<UserLanguage>>('/languages', data),
 
     destroy: (id: number) => client().delete(`/languages/${id}`),
   },

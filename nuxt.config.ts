@@ -18,7 +18,7 @@ export default defineNuxtConfig({
   nitro: {
     devProxy: {
       '/api': {
-        target: 'https://jec.sheltersibanda.com/api',
+        target: 'https://JEC.test',
         changeOrigin: true,
       },
     },
